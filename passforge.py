@@ -17,5 +17,13 @@ if __name__ == '__main__':
     length = int(input("Enter desired password length: "))
     include_digits = input("Include digits? (y/n): ").lower() == 'y'
     include_punctuation = input("Include punctuation? (y/n): ").lower() == 'y'
+    website = input("Enter website: ")
+    email = input("Enter email ID: ")
+    username = input("Enter username: ")
     password, strength = generate_password(length, include_digits, include_punctuation)
-    print(f"Your {strength} password is: {password}")
+    
+    # Save password along with associated website, email ID and username to a file
+    with open('passwords.txt', 'a') as f:
+        f.write(f"Website: {website}\nEmail ID: {email}\nUsername: {username}\nPassword: {password}\n\n")
+        
+    print(f"Your {strength} password for {website} is: {password}")
