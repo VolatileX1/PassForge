@@ -3,39 +3,19 @@ import string
 
 def generate_password(length=12, include_digits=True, include_punctuation=True):
     """Generate a random password with customizable options"""
-    characters = string.ascii_letters
-    if include_digits:
-        characters += string.digits
-    if include_punctuation:
-        characters += string.punctuation
+    characters = string.ascii_letters + (string.digits if include_digits else '') + \
+                 (string.punctuation if include_punctuation else '')
     password = ''.join(random.choice(characters) for i in range(length))
-    return password
-
-def check_password_strength(password):
-    """Check the strength of a password and rate it as weak, medium, or strong"""
-    rating = 0
-    if len(password) >= 8:
-        rating += 1
-    if any(c.isupper() for c in password) and any(c.islower() for c in password):
-        rating += 1
-    if any(c.isdigit() for c in password):
-        rating += 1
-    if any(c in string.punctuation for c in password):
-        rating += 1
-    if len(password) >= 12:
-        rating += 1
-    if rating == 0:
-        return 'weak'
-    elif rating < 4:
-        return 'medium'
-    else:
-        return 'strong'
+    rating = sum([1 for check in [lambda s: len(s) >= 8,
+                                  lambda s: any(c.isupper() for c in s) and any(c.islower() for c in s),
+                                  lambda s: any(c.isdigit() for c in s),
+                                  lambda s: any(c in string.punctuation for c in s),
+                                  lambda s: len(s) >= 12] if check(password)])
+    return password, 'weak' if rating < 3 else 'medium' if rating < 5 else 'strong'
 
 if __name__ == '__main__':
     length = int(input("Enter desired password length: "))
     include_digits = input("Include digits? (y/n): ").lower() == 'y'
     include_punctuation = input("Include punctuation? (y/n): ").lower() == 'y'
-    password = generate_password(length, include_digits, include_punctuation)
-    print(f"Your password is: {password}")
-    strength = check_password_strength(password)
-    print(f"The strength of your password is {strength}.")
+    password, strength = generate_password(length, include_digits, include_punctuation)
+    print(f"Your {strength} password is: {password}")
